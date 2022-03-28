@@ -1,0 +1,328 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 PRESERVE8
+    2 00000000                 THUMB
+    3 00000000                 INCLUDE          DriverJeuLaser.inc
+    1 00000000         
+    2 00000000         ; Bibliotheque DriverJeuLaser (ancienne gassp72 adaptée 
+                       2021 - TR)
+    3 00000000         ; Accès en aux fonctions suivantes :
+    4 00000000         ; GPIO :
+    5 00000000         ; GPIOA_Set(char Broche), GPIOB_Set(char Broche), GPIOC_
+                       Set(char Broche)
+    6 00000000         ; GPIOA_Clear(char Broche), GPIOB_Clear(char Broche), GP
+                       IOC_Clear(char Broche)
+    7 00000000         
+    8 00000000         ; PWM :
+    9 00000000         ;/**
+   10 00000000         ; * @brief  Fixe une valeur de PWM, Val, en tick horloge
+                       . La rapport cyclique effectif
+   11 00000000         ; * est donc : rcy = Thaut_ticks / Periode_ticks
+   12 00000000         ; * @note   spécifique Jeu Laser, PWM liée exclusivement
+                        au TIM3, chan3
+   13 00000000         ; * @param  Thaut_ticks : durée de l'état haut d'une imp
+                       ulsion en Ticks
+   14 00000000         ;  * @retval None
+   15 00000000         ; */
+   16 00000000         
+   17 00000000         ;void PWM_Set_Value_TIM3_Ch3( unsigned short int Thaut_t
+                       icks);
+   18 00000000                 import           PWM_Set_Value_TIM3_Ch3
+   19 00000000         
+   20 00000000         
+   21 00000000         
+   22 00000000         ;/**
+   23 00000000         ; * @brief  Mise à 1 d'une broche GPIO 
+   24 00000000         ;  * @note   Une fonction par GPIO
+   25 00000000         ; * @param  Broche : 0 à 15
+   26 00000000         ; * @retval None
+   27 00000000         ; */
+   28 00000000         
+   29 00000000         ;void GPIOA_Set(char Broche);
+   30 00000000                 import           GPIOA_Set
+   31 00000000         
+   32 00000000         ;void GPIOB_Set(char Broche);
+   33 00000000                 import           GPIOB_Set
+   34 00000000         
+   35 00000000         ;void GPIOC_Set(char Broche);
+   36 00000000                 import           GPIOC_Set
+   37 00000000         
+   38 00000000         
+   39 00000000         
+   40 00000000         ;/**
+   41 00000000         ; * @brief  Mise à 0 d'une broche GPIO 
+   42 00000000         ;  * @note   Une fonction par GPIO
+   43 00000000         ; * @param  Broche : 0 à 15
+   44 00000000         ; * @retval None
+   45 00000000         ;  */
+   46 00000000         
+   47 00000000         ;void GPIOA_Clear(char Broche);
+   48 00000000                 import           GPIOA_Clear
+   49 00000000         
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   50 00000000         ;void GPIOB_Clear(char Broche);
+   51 00000000                 import           GPIOB_Clear
+   52 00000000         
+   53 00000000         ;void GPIOC_Clear(char Broche);
+   54 00000000                 import           GPIOC_Clear
+   55 00000000         
+   56 00000000                 end
+    4 00000000         
+    5 00000000         ; ====================== zone de réservation de données,
+                         ======================================
+    6 00000000         ;Section RAM (read only) :
+    7 00000000                 area             mesdata,data,readonly
+    8 00000000         
+    9 00000000         
+   10 00000000         ;Section RAM (read write):
+   11 00000000                 area             maram,data,readwrite
+   12 00000000         
+   13 00000000 00 00   SortieSon
+                               dcw              0
+   14 00000002         ;Index = 0 
+   15 00000002 00 00   Index   dcw              0
+   16 00000004         
+   17 00000004         ; ======================================================
+                       =========================================
+   18 00000004         
+   19 00000004         
+   20 00000004         
+   21 00000004         
+   22 00000004         ;Section ROM code (read only) :  
+   23 00000004                 area             moncode,code,readonly
+   24 00000000         ; écrire le code ici  
+   25 00000000                 EXPORT           CallbackSon
+   26 00000000                 EXPORT           SortieSon
+   27 00000000                 IMPORT           Son
+   28 00000000                 IMPORT           LongueurSon
+   29 00000000                 export           Index
+   30 00000000         
+   31 00000000         ; void CallbackSon (void)
+   32 00000000         CallbackSon
+                               proc
+   33 00000000         ; Adresse = adresse du premier echantillon
+   34 00000000 B470            push             {r4-r6}
+   35 00000002 480C            ldr              r0,= Son
+   36 00000004 490C            ldr              r1,= Index
+   37 00000006 F9B1 2000       ldrsh            r2, [r1]
+   38 0000000A         ;If index <=longueurSon
+   39 0000000A 4B0C            ldr              r3,=LongueurSon
+   40 0000000C 881C            ldrh             r4, [r3]
+   41 0000000E 42A2            cmp              r2, r4
+   42 00000010         ;saute si superieur
+   43 00000010 DC0E            bgt              Fin
+   44 00000012         
+   45 00000012 4B0B            ldr              r3,= SortieSon
+   46 00000014         ;Rx = son[indice]
+   47 00000014 F930 4012       ldrsh            r4, [r0, r2, lsl #1]
+   48 00000018         ; SortieSon = ramenerALaPlageValeur(SortieSon)
+   49 00000018 F44F 7534       mov              r5, #720
+   50 0000001C FB04 F405       mul              r4, r5
+   51 00000020 EA4F 4424       asr              r4, #16
+
+
+
+ARM Macro Assembler    Page 3 
+
+
+   52 00000024 F504 74B4       add              r4, #360
+   53 00000028 601C            str              r4, [r3]
+   54 0000002A         ; Index += 1
+   55 0000002A F102 0201       add              r2, #1
+   56 0000002E 600A            str              r2, [r1]
+   57 00000030         ; Sortir si fin Tableau si Index = longueurSon(taille du
+                        tableau)
+   58 00000030         Fin
+   59 00000030 BC70            pop              {r4-r6}
+   60 00000032 4770            bx               lr
+   61 00000034                 endp
+   62 00000034         
+   63 00000034         
+   64 00000034         
+   65 00000034         
+   66 00000034                 END
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=.\obj\gestionson.d -o.\obj\gestionson.o -I.\Driver -I.\RTE\_Simu -
+IC:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Programd
+ata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__EVAL 
+SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 534
+" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --predefine="_RT
+E_ SETA 1" --list=gestionson.lst Src\GestionSon.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+mesdata 00000000
+
+Symbol: mesdata
+   Definitions
+      At line 7 in file Src\GestionSon.s
+   Uses
+      None
+Comment: mesdata unused
+1 symbol
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+Index 00000002
+
+Symbol: Index
+   Definitions
+      At line 15 in file Src\GestionSon.s
+   Uses
+      At line 29 in file Src\GestionSon.s
+      At line 36 in file Src\GestionSon.s
+
+SortieSon 00000000
+
+Symbol: SortieSon
+   Definitions
+      At line 13 in file Src\GestionSon.s
+   Uses
+      At line 26 in file Src\GestionSon.s
+      At line 45 in file Src\GestionSon.s
+
+maram 00000000
+
+Symbol: maram
+   Definitions
+      At line 11 in file Src\GestionSon.s
+   Uses
+      None
+Comment: maram unused
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+CallbackSon 00000000
+
+Symbol: CallbackSon
+   Definitions
+      At line 32 in file Src\GestionSon.s
+   Uses
+      At line 25 in file Src\GestionSon.s
+Comment: CallbackSon used once
+Fin 00000030
+
+Symbol: Fin
+   Definitions
+      At line 58 in file Src\GestionSon.s
+   Uses
+      At line 43 in file Src\GestionSon.s
+Comment: Fin used once
+moncode 00000000
+
+Symbol: moncode
+   Definitions
+      At line 23 in file Src\GestionSon.s
+   Uses
+      None
+Comment: moncode unused
+3 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+GPIOA_Clear 00000000
+
+Symbol: GPIOA_Clear
+   Definitions
+      At line 48 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOA_Clear unused
+GPIOA_Set 00000000
+
+Symbol: GPIOA_Set
+   Definitions
+      At line 30 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOA_Set unused
+GPIOB_Clear 00000000
+
+Symbol: GPIOB_Clear
+   Definitions
+      At line 51 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOB_Clear unused
+GPIOB_Set 00000000
+
+Symbol: GPIOB_Set
+   Definitions
+      At line 33 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOB_Set unused
+GPIOC_Clear 00000000
+
+Symbol: GPIOC_Clear
+   Definitions
+      At line 54 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOC_Clear unused
+GPIOC_Set 00000000
+
+Symbol: GPIOC_Set
+   Definitions
+      At line 36 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: GPIOC_Set unused
+LongueurSon 00000000
+
+Symbol: LongueurSon
+   Definitions
+      At line 28 in file Src\GestionSon.s
+   Uses
+      At line 39 in file Src\GestionSon.s
+Comment: LongueurSon used once
+PWM_Set_Value_TIM3_Ch3 00000000
+
+Symbol: PWM_Set_Value_TIM3_Ch3
+
+
+
+ARM Macro Assembler    Page 2 Alphabetic symbol ordering
+External symbols
+
+   Definitions
+      At line 18 in file .\Driver\DriverJeuLaser.inc
+   Uses
+      None
+Comment: PWM_Set_Value_TIM3_Ch3 unused
+Son 00000000
+
+Symbol: Son
+   Definitions
+      At line 27 in file Src\GestionSon.s
+   Uses
+      At line 35 in file Src\GestionSon.s
+Comment: Son used once
+9 symbols
+353 symbols in table
