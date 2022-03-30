@@ -89,16 +89,17 @@ ARM Macro Assembler    Page 2
    13 00000000 00 00   SortieSon
                                dcw              0
    14 00000002         ;Index = 0 
-   15 00000002 00 00   Index   dcw              0
-   16 00000004         
-   17 00000004         ; ======================================================
+   15 00000002 00 00 00000000 
+                       Index   dcd              0
+   16 00000008         
+   17 00000008         ; ======================================================
                        =========================================
-   18 00000004         
-   19 00000004         
-   20 00000004         
-   21 00000004         
-   22 00000004         ;Section ROM code (read only) :  
-   23 00000004                 area             moncode,code,readonly
+   18 00000008         
+   19 00000008         
+   20 00000008         
+   21 00000008         
+   22 00000008         ;Section ROM code (read only) :  
+   23 00000008                 area             moncode,code,readonly
    24 00000000         ; écrire le code ici  
    25 00000000                 EXPORT           CallbackSon
    26 00000000                 EXPORT           SortieSon
@@ -110,47 +111,47 @@ ARM Macro Assembler    Page 2
    32 00000000         CallbackSon
                                proc
    33 00000000         ; Adresse = adresse du premier echantillon
-   34 00000000 B470            push             {r4-r6}
+   34 00000000 B4F0            push             {r4-r7}
    35 00000002 480C            ldr              r0,= Son
    36 00000004 490C            ldr              r1,= Index
-   37 00000006 F9B1 2000       ldrsh            r2, [r1]
-   38 0000000A         ;If index <=longueurSon
-   39 0000000A 4B0C            ldr              r3,=LongueurSon
-   40 0000000C 881C            ldrh             r4, [r3]
-   41 0000000E 42A2            cmp              r2, r4
-   42 00000010         ;saute si superieur
-   43 00000010 DC0E            bgt              Fin
-   44 00000012         
-   45 00000012 4B0B            ldr              r3,= SortieSon
-   46 00000014         ;Rx = son[indice]
-   47 00000014 F930 4012       ldrsh            r4, [r0, r2, lsl #1]
-   48 00000018         ; SortieSon = ramenerALaPlageValeur(SortieSon)
-   49 00000018 F44F 7534       mov              r5, #720
-   50 0000001C FB04 F405       mul              r4, r5
-   51 00000020 EA4F 4424       asr              r4, #16
+   37 00000006 680A            ldr              r2, [r1]
+   38 00000008         ;If index <=longueurSon
+   39 00000008 4B0C            ldr              r3,=LongueurSon
+   40 0000000A 881F            ldrh             r7, [r3]
+   41 0000000C 42BA            cmp              r2, r7
+   42 0000000E         ;saute si superieur
+   43 0000000E DC0E            bgt              Fin
+   44 00000010         
+   45 00000010 4E0B            ldr              r6,= SortieSon
+   46 00000012         ;Rx = son[indice]
+   47 00000012 F930 4012       ldrsh            r4, [r0, r2, lsl #1]
+   48 00000016         ; SortieSon = ramenerALaPlageValeur(SortieSon)
+   49 00000016 F44F 7534       mov              r5, #720
+   50 0000001A FB04 F405       mul              r4, r5
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   52 00000024 F504 74B4       add              r4, #360
-   53 00000028 601C            str              r4, [r3]
-   54 0000002A         ; Index += 1
-   55 0000002A F102 0201       add              r2, #1
-   56 0000002E 600A            str              r2, [r1]
-   57 00000030         ; Sortir si fin Tableau si Index = longueurSon(taille du
+   51 0000001E EA4F 4424       asr              r4, #16
+   52 00000022 F504 74B4       add              r4, #360
+   53 00000026 8034            strh             r4, [r6]
+   54 00000028         ; Index += 1
+   55 00000028 F102 0201       add              r2, #1
+   56 0000002C 600A            str              r2, [r1]
+   57 0000002E         ; Sortir si fin Tableau si Index = longueurSon(taille du
                         tableau)
-   58 00000030         Fin
-   59 00000030 BC70            pop              {r4-r6}
-   60 00000032 4770            bx               lr
-   61 00000034                 endp
-   62 00000034         
-   63 00000034         
-   64 00000034         
-   65 00000034         
-   66 00000034                 END
-              00000000 
+   58 0000002E         Fin
+   59 0000002E BCF0            pop              {r4-r7}
+   60 00000030 4770            bx               lr
+   61 00000032                 endp
+   62 00000032         
+   63 00000032         
+   64 00000032         
+   65 00000032         
+   66 00000032                 END
+              00 00 00000000 
               00000000 
               00000000 
               00000000 
@@ -182,7 +183,7 @@ Comment: mesdata unused
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-Index 00000002
+Index 00000004
 
 Symbol: Index
    Definitions
@@ -223,7 +224,7 @@ Symbol: CallbackSon
    Uses
       At line 25 in file Src\GestionSon.s
 Comment: CallbackSon used once
-Fin 00000030
+Fin 0000002E
 
 Symbol: Fin
    Definitions
