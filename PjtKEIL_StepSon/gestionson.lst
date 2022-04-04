@@ -102,66 +102,82 @@ ARM Macro Assembler    Page 2
    23 00000008                 area             moncode,code,readonly
    24 00000000         ; écrire le code ici  
    25 00000000                 EXPORT           CallbackSon
-   26 00000000                 EXPORT           SortieSon
-   27 00000000                 IMPORT           Son
-   28 00000000                 IMPORT           LongueurSon
-   29 00000000                 export           Index
-   30 00000000         
-   31 00000000         ; void CallbackSon (void)
-   32 00000000         CallbackSon
+   26 00000000                 EXPORT           StartSon
+   27 00000000                 EXPORT           SortieSon
+   28 00000000                 IMPORT           Son
+   29 00000000                 IMPORT           LongueurSon
+   30 00000000                 export           Index
+   31 00000000         
+   32 00000000         ; void CallbackSon (void)
+   33 00000000         CallbackSon
                                proc
-   33 00000000         ; Adresse = adresse du premier echantillon
-   34 00000000 B4F0            push             {r4-r7}
-   35 00000002 480C            ldr              r0,= Son
-   36 00000004 490C            ldr              r1,= Index
-   37 00000006 680A            ldr              r2, [r1]
-   38 00000008         ;If index <=longueurSon
-   39 00000008 4B0C            ldr              r3,=LongueurSon
-   40 0000000A 881F            ldrh             r7, [r3]
-   41 0000000C 42BA            cmp              r2, r7
-   42 0000000E         ;saute si superieur
-   43 0000000E DC0E            bgt              Fin
-   44 00000010         
-   45 00000010 4E0B            ldr              r6,= SortieSon
-   46 00000012         ;Rx = son[indice]
-   47 00000012 F930 4012       ldrsh            r4, [r0, r2, lsl #1]
-   48 00000016         ; SortieSon = ramenerALaPlageValeur(SortieSon)
-   49 00000016 F44F 7534       mov              r5, #720
-   50 0000001A FB04 F405       mul              r4, r5
+   34 00000000         ; Adresse = adresse du premier echantillon
+   35 00000000 B4F0            push             {r4-r7}
+   36 00000002 4814            ldr              r0,= Son
+   37 00000004 4914            ldr              r1,= Index
+   38 00000006 680A            ldr              r2, [r1]
+   39 00000008         ;If index <=longueurSon
+   40 00000008 4B14            ldr              r3,=LongueurSon
+   41 0000000A 881F            ldrh             r7, [r3]
+   42 0000000C 42BA            cmp              r2, r7
+   43 0000000E         ;saute si superieur ou egal
+   44 0000000E DA15            bge              call
+   45 00000010         
+   46 00000010 4E13            ldr              r6,= SortieSon
+   47 00000012         ;Rx = son[indice]
+   48 00000012 F930 4012       ldrsh            r4, [r0, r2, lsl #1]
+   49 00000016         ; SortieSon = ramenerALaPlageValeur(SortieSon)
+   50 00000016 F44F 7534       mov              r5, #720
 
 
 
 ARM Macro Assembler    Page 3 
 
 
-   51 0000001E EA4F 4424       asr              r4, #16
-   52 00000022 F504 74B4       add              r4, #360
-   53 00000026 8034            strh             r4, [r6]
-   54 00000028         ; Index += 1
-   55 00000028 F102 0201       add              r2, #1
-   56 0000002C 600A            str              r2, [r1]
-   57 0000002E         ; Sortir si fin Tableau si Index = longueurSon(taille du
+   51 0000001A FB04 F405       mul              r4, r5
+   52 0000001E EA4F 4424       asr              r4, #16
+   53 00000022 F504 74B4       add              r4, #360
+   54 00000026 8034            strh             r4, [r6]
+   55 00000028 4620            mov              r0, r4
+   56 0000002A B506            push             {lr, r2, r1}
+   57 0000002C F7FF FFFE       bl               PWM_Set_Value_TIM3_Ch3
+   58 00000030 E8BD 4006       pop              {lr, r2, r1}
+   59 00000034         ; Index += 1
+   60 00000034 F102 0201       add              r2, #1
+   61 00000038 600A            str              r2, [r1]
+   62 0000003A E004            b                Fin
+   63 0000003C         ; Sortir si fin Tableau si Index = longueurSon(taille du
                         tableau)
-   58 0000002E         Fin
-   59 0000002E BCF0            pop              {r4-r7}
-   60 00000030 4770            bx               lr
-   61 00000032                 endp
-   62 00000032         
-   63 00000032         
-   64 00000032         
-   65 00000032         
-   66 00000032                 END
-              00 00 00000000 
+   64 0000003C         call
+   65 0000003C B500            push             {lr}
+   66 0000003E F7FF FFFE       bl               StartSon
+   67 00000042 F85D EB04       pop              {lr}
+   68 00000046         Fin
+   69 00000046 BCF0            pop              {r4-r7}
+   70 00000048 4770            bx               lr
+   71 0000004A                 endp
+   72 0000004A         
+   73 0000004A         StartSon
+                               proc
+   74 0000004A 4903            ldr              r1 ,= Index
+   75 0000004C F04F 0200       mov              r2, #0
+   76 00000050 600A            str              r2, [r1]
+   77 00000052 4770            bx               lr
+   78 00000054         
+   79 00000054                 endp
+   80 00000054         
+   81 00000054                 END
+              00000000 
               00000000 
               00000000 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
-ork --depend=.\obj\gestionson.d -o.\obj\gestionson.o -I.\Driver -I.\RTE\_Simu -
-IC:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Programd
-ata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__EVAL 
-SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 534
-" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --predefine="_RT
-E_ SETA 1" --list=gestionson.lst Src\GestionSon.s
+ork --depend=.\obj\gestionson.d -o.\obj\gestionson.o -I.\Driver -I.\RTE\_CibleS
+ondeKEIL -IC:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC
+:\Programdata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefin
+e="__EVAL SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSIO
+N SETA 534" --predefine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --pred
+efine="_RTE_ SETA 1" --list=gestionson.lst Src\GestionSon.s
 
 
 
@@ -189,8 +205,9 @@ Symbol: Index
    Definitions
       At line 15 in file Src\GestionSon.s
    Uses
-      At line 29 in file Src\GestionSon.s
-      At line 36 in file Src\GestionSon.s
+      At line 30 in file Src\GestionSon.s
+      At line 37 in file Src\GestionSon.s
+      At line 74 in file Src\GestionSon.s
 
 SortieSon 00000000
 
@@ -198,8 +215,8 @@ Symbol: SortieSon
    Definitions
       At line 13 in file Src\GestionSon.s
    Uses
-      At line 26 in file Src\GestionSon.s
-      At line 45 in file Src\GestionSon.s
+      At line 27 in file Src\GestionSon.s
+      At line 46 in file Src\GestionSon.s
 
 maram 00000000
 
@@ -220,18 +237,35 @@ CallbackSon 00000000
 
 Symbol: CallbackSon
    Definitions
-      At line 32 in file Src\GestionSon.s
+      At line 33 in file Src\GestionSon.s
    Uses
       At line 25 in file Src\GestionSon.s
 Comment: CallbackSon used once
-Fin 0000002E
+Fin 00000046
 
 Symbol: Fin
    Definitions
-      At line 58 in file Src\GestionSon.s
+      At line 68 in file Src\GestionSon.s
    Uses
-      At line 43 in file Src\GestionSon.s
+      At line 62 in file Src\GestionSon.s
 Comment: Fin used once
+StartSon 0000004A
+
+Symbol: StartSon
+   Definitions
+      At line 73 in file Src\GestionSon.s
+   Uses
+      At line 26 in file Src\GestionSon.s
+      At line 66 in file Src\GestionSon.s
+
+call 0000003C
+
+Symbol: call
+   Definitions
+      At line 64 in file Src\GestionSon.s
+   Uses
+      At line 44 in file Src\GestionSon.s
+Comment: call used once
 moncode 00000000
 
 Symbol: moncode
@@ -240,7 +274,7 @@ Symbol: moncode
    Uses
       None
 Comment: moncode unused
-3 symbols
+5 symbols
 
 
 
@@ -299,9 +333,9 @@ LongueurSon 00000000
 
 Symbol: LongueurSon
    Definitions
-      At line 28 in file Src\GestionSon.s
+      At line 29 in file Src\GestionSon.s
    Uses
-      At line 39 in file Src\GestionSon.s
+      At line 40 in file Src\GestionSon.s
 Comment: LongueurSon used once
 PWM_Set_Value_TIM3_Ch3 00000000
 
@@ -315,15 +349,15 @@ External symbols
    Definitions
       At line 18 in file .\Driver\DriverJeuLaser.inc
    Uses
-      None
-Comment: PWM_Set_Value_TIM3_Ch3 unused
+      At line 57 in file Src\GestionSon.s
+Comment: PWM_Set_Value_TIM3_Ch3 used once
 Son 00000000
 
 Symbol: Son
    Definitions
-      At line 27 in file Src\GestionSon.s
+      At line 28 in file Src\GestionSon.s
    Uses
-      At line 35 in file Src\GestionSon.s
+      At line 36 in file Src\GestionSon.s
 Comment: Son used once
 9 symbols
-353 symbols in table
+355 symbols in table
