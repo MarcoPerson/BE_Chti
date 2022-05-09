@@ -26,23 +26,43 @@
 
 DFT_ModuleAuCarre proc
 	push {r4-r8}
-	mov r0 , #0 ; r0 va nous servir d'index
-	ldr r1 ,= LeSignal ; On garde l'adresse du signal
+	mov r8 , #0 ; r0 va nous servir d'index
+	; On garde l'adresse du signal dans r0
+	; On garde la valeur de k dans r1
 	mov r2 , #0 ; On garde ici la somme reelle
 	mov r3 , #0 ; On garde ici la somme imaginaire
 	mov r5, #64
 debut
-	cmp r0, r5
+	cmp r8, r5
 	bge fin
-	ldrsh r4 , [r1, r0] ; Je lis un element du signal
+	;Cos
+	ldr r6,= TabCos ; Je lis l'adresse de TabCos
+	mul r4, r1, r8 ; On multiplie n*k
+	and r4, r4, #63
+	ldrsh r7, [r6, r4, lsl#1] ; On lit la valeur correspondant dans TabCos
+	ldrsh r4 , [r0, r8, lsl#1] ; Je lis un element du signal
+	mul r4, r7
 	add r2, r4
-	
-	add r0, #1
+	;Sin
+	ldr r6,= TabSin ; Je lis l'adresse de TabCos
+	mul r4, r1, r8 ; On multiplie n*k
+	and r4, r4, #63
+	ldrsh r7, [r6, r4, lsl#1] ; On lit la valeur correspondant dans TabSin
+	ldrsh r4 , [r0, r8, lsl#1] ; Je lis un element du signal
+	mul r4, r7
+	add r3, r4
+	add r8, #1
 	b debut
 
 fin
+	smull r1,r0,r2,r2
+	smlal r1,r0,r3,r3
+	;smull r4,r5,r3,r3
+	;add r0,r5
+	;add r1,r4
+	
+	
 	pop {r4-r8}
-	mov r0, r2
 	bx lr
 		
 	endp
