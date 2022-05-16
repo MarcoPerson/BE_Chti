@@ -1,0 +1,111 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             Signal, DATA, READONLY
+    2 00000000                 export           LeSignal
+    3 00000000         LeSignal
+    4 00000000 40 0F           DCW              0x0f40      ;  0 3904  0.95313
+    5 00000002 F5 0D           DCW              0x0df5      ;  1 3573  0.87231
+    6 00000004 26 0C           DCW              0x0c26      ;  2 3110  0.75928
+    7 00000006 FC 09           DCW              0x09fc      ;  3 2556  0.62402
+    8 00000008 A7 07           DCW              0x07a7      ;  4 1959  0.47827
+    9 0000000A 59 05           DCW              0x0559      ;  5 1369  0.33423
+   10 0000000C 45 03           DCW              0x0345      ;  6  837  0.20435
+   11 0000000E 9A 01           DCW              0x019a      ;  7  410  0.10010
+   12 00000010 7C 00           DCW              0x007c      ;  8  124  0.03027
+   13 00000012 03 00           DCW              0x0003      ;  9    3  0.00073
+   14 00000014 3B 00           DCW              0x003b      ; 10   59  0.01440
+   15 00000016 1E 01           DCW              0x011e      ; 11  286  0.06982
+   16 00000018 98 02           DCW              0x0298      ; 12  664  0.16211
+   17 0000001A 8A 04           DCW              0x048a      ; 13 1162  0.28369
+   18 0000001C C8 06           DCW              0x06c8      ; 14 1736  0.42383
+   19 0000001E 21 09           DCW              0x0921      ; 15 2337  0.57056
+   20 00000020 62 0B           DCW              0x0b62      ; 16 2914  0.71143
+   21 00000022 57 0D           DCW              0x0d57      ; 17 3415  0.83374
+   22 00000024 D7 0E           DCW              0x0ed7      ; 18 3799  0.92749
+   23 00000026 C0 0F           DCW              0x0fc0      ; 19 4032  0.98438
+   24 00000028 FE 0F           DCW              0x0ffe      ; 20 4094  0.99951
+   25 0000002A 8C 0F           DCW              0x0f8c      ; 21 3980  0.97168
+   26 0000002C 74 0E           DCW              0x0e74      ; 22 3700  0.90332
+   27 0000002E CD 0C           DCW              0x0ccd      ; 23 3277  0.80005
+   28 00000030 BC 0A           DCW              0x0abc      ; 24 2748  0.67090
+   29 00000032 70 08           DCW              0x0870      ; 25 2160  0.52734
+   30 00000034 19 06           DCW              0x0619      ; 26 1561  0.38110
+   31 00000036 ED 03           DCW              0x03ed      ; 27 1005  0.24536
+   32 00000038 1A 02           DCW              0x021a      ; 28  538  0.13135
+   33 0000003A C9 00           DCW              0x00c9      ; 29  201  0.04907
+   34 0000003C 18 00           DCW              0x0018      ; 30   24  0.00586
+   35 0000003E 15 00           DCW              0x0015      ; 31   21  0.00513
+   36 00000040 C0 00           DCW              0x00c0      ; 32  192  0.04688
+   37 00000042 0B 02           DCW              0x020b      ; 33  523  0.12769
+   38 00000044 DA 03           DCW              0x03da      ; 34  986  0.24072
+   39 00000046 04 06           DCW              0x0604      ; 35 1540  0.37598
+   40 00000048 59 08           DCW              0x0859      ; 36 2137  0.52173
+   41 0000004A A7 0A           DCW              0x0aa7      ; 37 2727  0.66577
+   42 0000004C BB 0C           DCW              0x0cbb      ; 38 3259  0.79565
+   43 0000004E 66 0E           DCW              0x0e66      ; 39 3686  0.89990
+   44 00000050 84 0F           DCW              0x0f84      ; 40 3972  0.96973
+   45 00000052 FD 0F           DCW              0x0ffd      ; 41 4093  0.99927
+   46 00000054 C5 0F           DCW              0x0fc5      ; 42 4037  0.98560
+   47 00000056 E2 0E           DCW              0x0ee2      ; 43 3810  0.93018
+   48 00000058 68 0D           DCW              0x0d68      ; 44 3432  0.83789
+   49 0000005A 76 0B           DCW              0x0b76      ; 45 2934  0.71631
+   50 0000005C 38 09           DCW              0x0938      ; 46 2360  0.57617
+   51 0000005E DF 06           DCW              0x06df      ; 47 1759  0.42944
+   52 00000060 9E 04           DCW              0x049e      ; 48 1182  0.28857
+   53 00000062 A9 02           DCW              0x02a9      ; 49  681  0.16626
+   54 00000064 29 01           DCW              0x0129      ; 50  297  0.07251
+   55 00000066 40 00           DCW              0x0040      ; 51   64  0.01563
+   56 00000068 02 00           DCW              0x0002      ; 52    2  0.00049
+   57 0000006A 74 00           DCW              0x0074      ; 53  116  0.02832
+   58 0000006C 8C 01           DCW              0x018c      ; 54  396  0.09668
+   59 0000006E 33 03           DCW              0x0333      ; 55  819  0.19995
+
+
+
+ARM Macro Assembler    Page 2 
+
+
+   60 00000070 44 05           DCW              0x0544      ; 56 1348  0.32910
+   61 00000072 90 07           DCW              0x0790      ; 57 1936  0.47266
+   62 00000074 E7 09           DCW              0x09e7      ; 58 2535  0.61890
+   63 00000076 13 0C           DCW              0x0c13      ; 59 3091  0.75464
+   64 00000078 E6 0D           DCW              0x0de6      ; 60 3558  0.86865
+   65 0000007A 37 0F           DCW              0x0f37      ; 61 3895  0.95093
+   66 0000007C E8 0F           DCW              0x0fe8      ; 62 4072  0.99414
+   67 0000007E EB 0F           DCW              0x0feb      ; 63 4075  0.99487
+   68 00000080                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
+ork --depend=.\obj\signal.d -o.\obj\signal.o -I.\RTE\_CibleSondeKEIL -IC:\Progr
+amdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include -IC:\Programdata\Keil\
+Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include --predefine="__EVAL SETA 1" -
+-predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 534" --prede
+fine="_RTE_ SETA 1" --predefine="STM32F10X_MD SETA 1" --predefine="_RTE_ SETA 1
+" --list=signal.lst Src\Signal.asm
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+LeSignal 00000000
+
+Symbol: LeSignal
+   Definitions
+      At line 3 in file Src\Signal.asm
+   Uses
+      At line 2 in file Src\Signal.asm
+Comment: LeSignal used once
+Signal 00000000
+
+Symbol: Signal
+   Definitions
+      At line 1 in file Src\Signal.asm
+   Uses
+      None
+Comment: Signal unused
+2 symbols
+337 symbols in table
