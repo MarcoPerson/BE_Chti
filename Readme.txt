@@ -12,5 +12,5 @@ DFT temps réel testé avec différentes fréquences normalisés (1 et 18) et av
 
 pjtKeil_StepIntegration
 
-Integration de tous les Steps Fini, Testé avec le son et l'affichage. Incrémente bien et émets un son.
+Integration de tous les Steps Fini, on a testé avec le son et l'affichage et ça incrémente bien, émets un son lors d'un tir par les différents joueurs.
 
