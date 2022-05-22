@@ -3,6 +3,7 @@
 #include "DriverJeuLaser.h"
 #include "GestionSon.h"
 #include "Affichage_Valise.h"
+#include <stdlib.h>
 
 extern int DFT_ModuleAuCarre(short int * Signal64ech, char k);
 extern short LeSignal;
@@ -66,12 +67,23 @@ GPIO_Configure(GPIOB, 0, OUTPUT, ALT_PPULL);
 /* Configuration Aff */
 Init_Affichage();
 
+/*Config Premiere Affichage*/
+int numLed = 0;
+Prepare_Set_LED(numLed);
+Choix_Capteur(numLed+1);
+Mise_A_Jour_Afficheurs_LED();
+
+
 //============================================================================	
 	
 	
 while	(1)
 	{
 		if (Maj) {
+			Prepare_Clear_LED(numLed);
+			numLed = rand()%4;
+			Prepare_Set_LED(numLed);
+			Choix_Capteur(numLed+1);
 			Mise_A_Jour_Afficheurs_LED();
 			Maj=0;
 		}
